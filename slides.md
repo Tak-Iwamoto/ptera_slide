@@ -31,13 +31,13 @@ lineNumbers: false
     Takuro Iwamoto
   </div>
   <div>
-    <img class="w-32 h-32 rounded-full" src="tak_iwamoto_profile.jpeg">
+    <img class="w-48 h-48 rounded-full" src="tak_iwamoto_profile.jpeg">
   </div>
 </div>
 
 - Software Engineer at STORES 予約
 - 最近の興味は Deno と Rust
-- https://twitter.com/tak_rockbook
+- Twitter: @tak_rockbook
 
 <br>
 <br>
@@ -49,8 +49,8 @@ lineNumbers: false
 <div class="flex items-center mb-2 justify-between">
   <div>
     <li>DateTime Library For Deno</li>
-    <li>Inspired By Day.js, Luxon and Moment.js</li>
     <li>Fully written in Deno</li>
+    <li>Inspired By Day.js, Luxon and Moment.js</li>
   </div>
   <div class="ml-24">
     <img src="ptera.svg">
@@ -74,7 +74,7 @@ datetime().setLocale("fr");
 
 # Why does Ptera exist?
 
-Node.js の DateTime ライブラリも Deno で使用できる。
+## Node.js の DateTime ライブラリも Deno で使用できる。
 
 ```ts
 import dayjs from "https://cdn.skypack.dev/dayjs@1.10.4";
@@ -88,10 +88,10 @@ format(new Date(), "'Today is a' eeee");
 
 <div class="mb-4"></div>
 
-- dayjs は Deno で使用する際に補完が効かない。(2021/8 現在)
-- Luxon は補完が効くが、parse する際に明示的に API を分けているのが個人的には好みではない。
-- date-fns は deno_std/datetime/と役割がかぶっている？
 - 単純に Deno で何かライブラリを書いてみたかった！
+- Day.js や Luxon のように独自のクラスを提供している Deno のライブラリはなかった。
+  - deno_std/datetime に date-fns 的な Date クラスに対する utilities は存在している。
+- dayjs は Deno で使用する際に補完が効かない。
 
 ---
 
@@ -167,39 +167,7 @@ const dtFr = datetime("2021-07-03").setLocale("fr");
 dtFr.toDateTimeFormat({ dateStyle: "full" }); // samedi 3 juillet 2021;
 ```
 
----
-
-# Utilities
-
-## diff
-
-```ts
-import { diffInMillisec } from "https://deno.land/x/ptera/mod.ts";
-const dt1 = datetime("2021-08-21:13:30:00");
-const dt2 = datetime("2021-01-30:21:30:00");
-diffInMillisec(dt1, dt2); // 17510400000
-```
-
-## latest, oldest
-
-```ts
-import {
-  latestDateTime,
-  oldestDateTime,
-} from "https://deno.land/x/ptera/mod.ts";
-
-const latest = datetime("2021-08-21");
-const oldest = datetime("2021-01-30");
-const middle = datetime("2021-04-30");
-const datetimes = [latest, oldest, middle];
-
-latestDateTime(datetimes); // latest
-oldestDateTime(datetimes); // oldest
-```
-
----
-
-# basic
+# Basic
 
 ```ts
 datetime("2045-01-01").isBefore(); // false
@@ -212,4 +180,61 @@ datetime("2021-13-01").isValid(); // false
 
 ---
 
-<div class="m-auto"><h1>Denoで日付を扱う際にぜひお試しください！</h1></div>
+# Math
+
+```ts
+import {
+  diffInMillisec,
+  latestDateTime,
+  oldestDateTime,
+} from "https://deno.land/x/ptera/mod.ts";
+const dt1 = datetime("2021-08-21:13:30:00");
+const dt2 = datetime("2021-01-30:21:30:00");
+
+diffInMillisec(dt1, dt2); // 17510400000
+
+const latest = datetime("2021-08-21");
+const oldest = datetime("2021-01-30");
+const middle = datetime("2021-04-30");
+const datetimes = [latest, oldest, middle];
+
+latestDateTime(datetimes); // latest
+oldestDateTime(datetimes); // oldest
+
+const dt = datetime("2021-08-21:13:30:00");
+// { year: 2021, month: 8, day: 21, hour: 13, minute: 30, second: 0, millisecond: 0, }
+
+dt.add({ year: 1 }).substract({ month: 2 });
+// { year: 2022, month: 6, day: 21, hour: 13, minute: 30, second: 0, millisecond: 0, }
+```
+
+---
+
+# 今後について
+
+## Temporal
+
+ECMAScript 標準の日付 API(2021 年 8 月現在、Stage3)
+
+```ts
+const zonedDateTime = Temporal.ZonedDateTime.from({
+  timeZone: "America/Los_Angeles",
+  year: 1995,
+  month: 12,
+  day: 7,
+});
+
+const record = Temporal.Duration.from({
+  minutes: 26,
+  seconds: 17,
+  milliseconds: 530,
+});
+```
+
+Temporal API が実装されれば Ptera を含めた、ラッパークラスを提供しているライブラリは不要になる？
+
+Temporal 版 date-fns のようなライブラリにできると面白そう
+
+---
+
+<div class="flex justify-center items-center mt-10"><h1>Denoで日付を扱う際にぜひお試しください！</h1></div>
